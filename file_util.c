@@ -344,39 +344,33 @@ int program_rule(){
 
 //Production 2
 int statement_list(){
-	int stateExist = 1;
+	bool stateExist = false;
 	int stateS = 0;
 	enum token nxtTk;
 	
-	while(stateExist==1){
+	do{
 		statement();
 		nxtTk = next_token(tkPtr);
 		printf("\nToken used for loop check in statement_list: %d \n",nxtTk);
 		switch(nxtTk){
 			case ID:
-				stateExist=1;
+				stateExist=true;
 				break;
 			case READ:
-				stateExist=1;
+				stateExist=true;
 				break;
 			case WRITE:
-				stateExist=1;
+				stateExist=true;
 				break;
 			case IF:
-				stateExist=1;
+				stateExist=true;
 				break;
 			default:
-				stateExist=0;
+				stateExist=false;
 		}
-		printf("\n END OF STATEMENT LIST LOOP\n");
-		if(nxtTk = 1){
-			printf("\nWORKED\n");
-			stateExist=0;
-		}
-	}
-//	if(error){
-//		stateS++;
-//	}
+		
+	}while(stateExist);
+
 	return stateS;
 }
 
