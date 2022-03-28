@@ -273,9 +273,9 @@ void parser(){
 		//errorC = system_goal();
 //		if(errorC = 0){
 //			accepted = true;
-		system_goal();
-		accepted = true;
-
+		if(system_goal() == 0){
+			accepted = true;
+		};
 	}	
 	return;
 }
@@ -294,6 +294,7 @@ bool match(enum token token, char *tokBuf){
 			stateBufP++;
 		}
 		fsetpos(in_file, &posA);
+		//fprintf("EXPECTED TOKEN:   %s   ACTUAL TOKEN:   %s\n",,);
 		return true;
 	}
 	else{
@@ -306,6 +307,7 @@ bool match(enum token token, char *tokBuf){
 		}
 		fsetpos(in_file, &posA);
 		//error(Expected token);
+		//fprintf("EXPECTED TOKEN:   %s   ACTUAL TOKEN:   %s\n",,);
 		return false;
 	}
 }
@@ -323,12 +325,8 @@ enum token next_token(){
 
 int system_goal(){
 	program_rule();
-	printf("\n Checking for final END token\n");
-	if(!match(END,statePtr)){
-		lexErr++;
-	}
-//	pop();
-
+	printf("\n PARSER SUCCESSFUL\n");
+	
 	return 0;
 }
 
@@ -338,39 +336,44 @@ int program_rule(){
 		lexErr++;
 	}
 	statement_list();
-//	if(!match(END)){
-//		lexErr++;
-//	}	
+	if(!match(END,statePtr)){
+		lexErr++;
+	}	
 	return 0;
 }
 
 //Production 2
 int statement_list(){
-	bool stateExist = false;
+	int stateExist = 1;
 	int stateS = 0;
 	enum token nxtTk;
 	
-	do{
+	while(stateExist==1){
 		statement();
 		nxtTk = next_token(tkPtr);
 		printf("\nToken used for loop check in statement_list: %d \n",nxtTk);
-		if(nxtTk=ID){
-			//CHECK HERE
-			stateExist=true;
+		switch(nxtTk){
+			case ID:
+				stateExist=1;
+				break;
+			case READ:
+				stateExist=1;
+				break;
+			case WRITE:
+				stateExist=1;
+				break;
+			case IF:
+				stateExist=1;
+				break;
+			default:
+				stateExist=0;
 		}
-		else if(nxtTk=READ){
-			stateExist=true;
+		printf("\n END OF STATEMENT LIST LOOP\n");
+		if(nxtTk = 1){
+			printf("\nWORKED\n");
+			stateExist=0;
 		}
-		else if(nxtTk=WRITE){
-			stateExist=true;
-		}
-		else if(nxtTk=IF){
-			stateExist=true;
-		}
-		else{
-			stateExist=false;
-		}
-	}while(stateExist);
+	}
 //	if(error){
 //		stateS++;
 //	}
@@ -447,7 +450,7 @@ int statement(){
 			}
 			break;	
 	}
-	printf("\nCurrent statement: %s \n", statePtr);
+	fprintf(out_file,"\nCurrent statement: %s \n", statePtr);
 	stateBufP = 0;
 	clear_buffer(statePtr);
 	return 0;

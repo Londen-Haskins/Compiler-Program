@@ -24,6 +24,7 @@ enum token{
 		GREATEROP,GREATEREQUALOP,EQUALOP,NOTEQUALOP,SCANEOF,EOL,ERROR,SPACE
 	};
 	
+
 enum token tok,tokTemp,tkTmp;
 enum token scanner(char *buffer,FILE *inFile,FILE *out_file,FILE *listFile);
 fpos_t posN, posA; //File pointer position for parser and position for match()
