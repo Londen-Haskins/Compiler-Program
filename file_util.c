@@ -19,12 +19,12 @@ enum token scanner(char *tokBuf,FILE *inFile,FILE *out_file,FILE *listFile){
 	//Eat whitespace and start main scanner loop
 	do{
 		c = fgetc(inFile);
+		//Change to while loop
 		if(isspace(c)){
-			if(c == '\v' || c == '\n' || c == '\r'){
+			if(c == '\n' || c == '\v' || c == '\r'){
 				listNum++;
 			}
 			else{
-				add_char(tokBuf,c,0);
 				fputs(tokBuf,listFile);
 			}
 			//DO A CHECK HERE TO LOOK AHEAD AND SEE IF NEXT CHARACTER IS WHITESPACE
@@ -353,29 +353,22 @@ int statement_list(){
 	do{
 		statement();
 		nxtTk = next_token(tkPtr);
+		printf("\nToken used for loop check in statement_list: %d \n",nxtTk);
 		if(nxtTk=ID){
+			//CHECK HERE
 			stateExist=true;
-			fsetpos(in_file,&posA);
-			match(ID,statePtr);
 		}
 		else if(nxtTk=READ){
 			stateExist=true;
-			fsetpos(in_file,&posA);
-			match(READ,statePtr);
 		}
 		else if(nxtTk=WRITE){
 			stateExist=true;
-			fsetpos(in_file,&posA);
-			match(WRITE,statePtr);
 		}
 		else if(nxtTk=IF){
 			stateExist=true;
-			fsetpos(in_file,&posA);
-			match(IF,statePtr);
 		}
 		else{
 			stateExist=false;
-			fsetpos(in_file,&posA);
 		}
 	}while(stateExist);
 //	if(error){
@@ -512,6 +505,7 @@ int id_list(){
 int expr_list(){
 	enum token repeat;
 	printf("\nRunning expr_list production\n");
+	expression();
 	repeat = next_token(tkPtr);
 	while(repeat=COMMA){
 		match(COMMA,statePtr);
@@ -540,6 +534,7 @@ int term(){
 	printf("\nRunning term production\n");
 	factor();
 	repeat = next_token(tkPtr);
+	printf("\n Using this token for production 13 check loop\n");
 	while(repeat==MULTOP || repeat==DIVOP){
 		mult_op();
 		factor();

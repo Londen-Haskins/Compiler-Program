@@ -1,8 +1,6 @@
 /*
-	Group Members:
-		Shane Riggar  ---- rig6382@calu.edu
+	Group Member:
 		Londen Haskins --- has4082@calu.edu
-		Michael Mickey --- mic9185@calu.edu
 	Group Number: 5
 	Language Translation
 	CSC 460
@@ -17,7 +15,7 @@
 #include "scanner.h"	//include scannner header
 
 char tokenBuffer[TKLEN];
-
+char stateBuf[TKLEN];
 
 int main(int argc, char *argv[]) 
 {
