@@ -47,7 +47,6 @@ enum token scanner(char *tokBuf,FILE *inFile,FILE *out_file,FILE *listFile){
 					fsetpos(inFile, &pos);
 				}
 			}while(isalpha(k));
-			printf("Current buffer: %s\n",tkPtr);
 		}
 		else if(isdigit(c)){
 			k = c;
@@ -61,8 +60,6 @@ enum token scanner(char *tokBuf,FILE *inFile,FILE *out_file,FILE *listFile){
 					fsetpos(inFile, &pos);
 				}
 			}while(isdigit(k));
-			printf("Current intliteral buffer: %s\n",tkPtr);
-
 		}
 			
 		//Remaining test cases
@@ -101,7 +98,6 @@ enum token scanner(char *tokBuf,FILE *inFile,FILE *out_file,FILE *listFile){
 			if(k == '='){
 				p++;
 				add_char(tokBuf,k,p);
-				printf("Current buffer: %s\n",tkPtr);
 			}
 			else{
 				fgetpos(inFile, &pos);
@@ -328,7 +324,6 @@ bool match(enum token token, char *tokBuf){
 	int i = 0;
 	nxtTk = next_token();
 	if(nxtTk == token){
-		printf("Match for token %d is true\n", token);
 		while(tokenBuffer[i] != '\0'){
 			add_char(tokBuf,tokenBuffer[i],stateBufP);
 			i++;
@@ -340,15 +335,14 @@ bool match(enum token token, char *tokBuf){
 	}
 	else{
 		//Lexical error
-		printf("Match for token %d is false\n", token);
+		fprintf(list_file,"\nMatch for token %d is false\n", token);
 		while(tokenBuffer[i] != '\0'){
 			add_char(tokBuf,tokenBuffer[i],stateBufP);
 			i++;
 			stateBufP++;
 		}
 		fsetpos(in_file, &posA);
-		//error(Expected token);
-		//fprintf("EXPECTED TOKEN:   %s   ACTUAL TOKEN:   %s\n",,);
+		fprintf(out_file,"EXPECTED TOKEN:   %s   ACTUAL TOKEN:   %s\n",tkList[token],tkPtr);
 		return false;
 	}
 }
@@ -367,6 +361,7 @@ enum token next_token(){
 int system_goal(){
 	program_rule();
 	printf("\n PARSER SUCCESSFUL\n");
+	fprintf(list_file,"\nNumber of lexical errors: %d\n",lexErr);
 	
 	return 0;
 }
@@ -375,6 +370,11 @@ int system_goal(){
 int program_rule(){
 	if(!match(BEGIN,statePtr)){
 		lexErr++;
+	}
+	else{
+		fprintf(out_file,"\nCurrent statement: %s \n", statePtr);
+		stateBufP = 0;
+		clear_buffer(statePtr);
 	}
 	statement_list();
 	if(!match(END,statePtr)){
@@ -392,7 +392,6 @@ int statement_list(){
 	do{
 		statement();
 		nxtTk = next_token(tkPtr);
-		printf("\nToken used for loop check in statement_list: %d \n",nxtTk);
 		switch(nxtTk){
 			case ID:
 				stateExist=true;
@@ -419,13 +418,13 @@ int statement(){
 	//enum token nxtTk;
 	int nxtTk;
 
-	printf("\nRunning statement production\n");
+	//printf("\nRunning statement production\n");
 	nxtTk = next_token(tkPtr);
 	
 	switch(nxtTk){
 		//Production 3
 		case 10:
-			printf("\nRunning statement production rule 3\n");
+			//printf("\nRunning statement production rule 3\n");
 			if(!match(ID,statePtr)){
 				lexErr++;
 			}
@@ -439,7 +438,7 @@ int statement(){
 			break;
 		//Production 4
 		case 2:
-			printf("\nRunning statement production rule 4\n");
+			//printf("\nRunning statement production rule 4\n");
 			if(!match(READ,statePtr)){
 				lexErr++;
 			}
@@ -456,7 +455,7 @@ int statement(){
 			break;
 		//Production 5
 		case 3:
-			printf("\nRunning statement production rule 5\n");
+			//printf("\nRunning statement production rule 5\n");
 			if(!match(WRITE,statePtr)){
 				lexErr++;
 			}
@@ -473,7 +472,7 @@ int statement(){
 			break;
 		//Production 6
 		case IF:
-			printf("\nRunning statement production rule 6\n");
+			//printf("\nRunning statement production rule 6\n");
 			if(!match(IF,statePtr)){
 				lexErr++;
 			}
@@ -486,7 +485,7 @@ int statement(){
 			break;
 		//Production 9
 		case 8:
-			printf("\nRunning statement production rule 8\n");
+			//printf("\nRunning statement production rule 8\n");
 			if(!match(WHILE,statePtr)){
 				lexErr++;
 			}
@@ -505,13 +504,13 @@ int statement(){
 
 int if_tail(){
 	enum token nxtTk;
-	printf("\nRunning if_tail production\n");
+	//printf("\nRunning if_tail production\n");
 	nxtTk = scanner(tkPtr,in_file,out_file,list_file);
 	
 	switch(nxtTk){
 		//Production 7
 		case ELSE:
-			printf("\nRunning if_tail production rule 7\n");
+			//printf("\nRunning if_tail production rule 7\n");
 			if(!match(ELSE,statePtr)){
 				lexErr++;
 			}
@@ -523,7 +522,7 @@ int if_tail(){
 		
 		//Production 8
 		case ENDIF:
-			printf("\nRunning if_tail production rule 8\n");
+			//printf("\nRunning if_tail production rule 8\n");
 			if(!match(ENDIF,statePtr)){
 				lexErr++;
 			}
@@ -535,7 +534,7 @@ int if_tail(){
 //Production 10
 int id_list(){
 	enum token repeat;
-	printf("\nRunning id_list production\n");
+	//printf("\nRunning id_list production\n");
 	if(!match(ID,statePtr)){
 		lexErr++;
 	}
@@ -553,7 +552,7 @@ int id_list(){
 //Production 11
 int expr_list(){
 	enum token repeat;
-	printf("\nRunning expr_list production\n");
+	//printf("\nRunning expr_list production\n");
 	expression();
 	repeat = next_token(tkPtr);
 	while(repeat==COMMA){
@@ -569,7 +568,7 @@ int expr_list(){
 //Production 12
 int expression(){
 	enum token repeat;
-	printf("\nRunning expression production\n");
+	//printf("\nRunning expression production\n");
 	term();
 	repeat = next_token(tkPtr);
 	while(repeat==PLUSOP || repeat==MINUSOP){
@@ -583,10 +582,9 @@ int expression(){
 //Production 13
 int term(){
 	enum token repeat;
-	printf("\nRunning term production\n");
+	//printf("\nRunning term production\n");
 	factor();
 	repeat = next_token(tkPtr);
-	printf("\n Using this token for production 13 check loop\n");
 	while(repeat==MULTOP || repeat==DIVOP){
 		mult_op();
 		factor();
@@ -597,13 +595,12 @@ int term(){
 
 int factor(){
 	enum token nxtTk;
-	printf("\nRunning factor production\n");
+	//printf("\nRunning factor production\n");
 	nxtTk = next_token(tkPtr);
-	printf("\n Token for factor switch: %d\n", nxtTk);
 	switch(nxtTk){
 		//Production 14
 		case LPAREN:
-			printf("\nRunning factor production rule 14\n");
+			//printf("\nRunning factor production rule 14\n");
 			if(!match(LPAREN,statePtr)){
 				lexErr++;
 			}
@@ -614,7 +611,7 @@ int factor(){
 			break;
 		//Production 15
 		case MINUSOP:
-			printf("\nRunning factor production rule 15\n");
+			//printf("\nRunning factor production rule 15\n");
 			if(!match(MINUSOP,statePtr)){
 				lexErr++;
 			}
@@ -622,14 +619,14 @@ int factor(){
 			break;
 		//Production 16
 		case ID:
-			printf("\nRunning factor production rule 16\n");
+			//printf("\nRunning factor production rule 16\n");
 			if(!match(ID,statePtr)){
 				lexErr++;
 			}
 			break;
 		//Production 17
 		case INTLITERAL:
-			printf("\nRunning factor production rule 17\n");
+			//printf("\nRunning factor production rule 17\n");
 			if(!match(INTLITERAL,statePtr)){
 				lexErr++;
 			}
@@ -640,20 +637,20 @@ int factor(){
 
 int add_op(){
 	enum token nxtTk;
-	printf("\nRunning add_op production\n");
+	//printf("\nRunning add_op production\n");
 	nxtTk = next_token(tkPtr);
 	
 	switch(nxtTk){
 		//Production 18
 		case PLUSOP:
-			printf("\nRunning add_op production rule 18\n");
+			//printf("\nRunning add_op production rule 18\n");
 			if(!match(PLUSOP,statePtr)){
 				lexErr++;
 			}
 			break;
 		//Production 19
 		case MINUSOP:
-			printf("\nRunning add_op production rule 19\n");
+			//printf("\nRunning add_op production rule 19\n");
 			if(!match(MINUSOP,statePtr)){
 				lexErr++;
 			}
@@ -664,20 +661,20 @@ int add_op(){
 
 int mult_op(){
 	enum token nxtTk;
-	printf("\nRunning mult_op production\n");
+	//printf("\nRunning mult_op production\n");
 	nxtTk = next_token(tkPtr);
 	
 	switch(nxtTk){
 		//Production 20
 		case MULTOP:
-			printf("\nRunning mult_op production rule 20\n");
+			//printf("\nRunning mult_op production rule 20\n");
 			if(!match(MULTOP,statePtr)){
 				lexErr++;
 			}
 			break;
 		//Production 21
 		case DIVOP:
-			printf("\nRunning mult_op production rule 21\n");
+			//printf("\nRunning mult_op production rule 21\n");
 			if(!match(DIVOP,statePtr)){
 				lexErr++;
 			}
@@ -689,7 +686,7 @@ int mult_op(){
 //Production 22
 int condition(){
 	enum token repeat;
-	printf("\nRunning condition production\n");
+	//printf("\nRunning condition production\n");
 	addition();
 	repeat = next_token(tkPtr);
 	while(repeat==LESSOP || repeat==LESSEQUALOP || repeat==GREATEROP || repeat==GREATEREQUALOP || repeat==NOTEQUALOP || repeat==EQUALOP){
@@ -703,7 +700,7 @@ int condition(){
 //Production 23
 int addition(){
 	enum token repeat;
-	printf("\nRunning addition production\n");
+	//printf("\nRunning addition production\n");
 	multiplication();
 	repeat = next_token(tkPtr);
 	while(repeat==PLUSOP || repeat==MINUSOP){
@@ -717,7 +714,7 @@ int addition(){
 //Production 24
 int multiplication(){
 	enum token repeat;
-	printf("\nRunning multiplication production\n");
+	//printf("\nRunning multiplication production\n");
 	unary();
 	repeat = next_token(tkPtr);
 	while(repeat==MULTOP || repeat==DIVOP){
@@ -730,7 +727,7 @@ int multiplication(){
 
 int unary(){
 	enum token nxtTk;
-	printf("\nRunning unary production\n");
+	//printf("\nRunning unary production\n");
 	nxtTk = next_token(tkPtr);
 	
 	switch(nxtTk){
@@ -773,27 +770,23 @@ int unary(){
 
 int lprimary(){
 	enum token nxtTk;
-	printf("\nRunning lprimary production\n");
 	nxtTk = next_token(tkPtr);
 	
 	switch(nxtTk){
 		//Production 28
 		case INTLITERAL:
-			printf("\nRunning lprimary production rule 28\n");
 			if(!match(INTLITERAL,statePtr)){
 				lexErr++;
 			}
 			break;
 		//Production 29
 		case ID:
-			printf("\nRunning lprimary production rule 29\n");
 			if(!match(ID,statePtr)){
 				lexErr++;
 			}
 			break;
 		//Production 30
 		case LPAREN:
-			printf("\nRunning lprimary production rule 30\n");
 			if(!match(LPAREN,statePtr)){
 				lexErr++;
 			}
@@ -804,21 +797,18 @@ int lprimary(){
 			break;
 		//Production 31
 		case FALSEOP:
-			printf("\nRunning lprimary production rule 31\n");
 			if(!match(FALSEOP,statePtr)){
 				lexErr++;
 			}
 			break;
 		//Production 32
 		case TRUEOP:
-			printf("\nRunning lprimary production rule 32\n");
 			if(!match(TRUEOP,statePtr)){
 				lexErr++;
 			}
 			break;
 		//Production 33
 		case NULLOP:
-			printf("\nRunning lprimary production rule 33\n");
 			if(!match(NULLOP,statePtr)){
 				lexErr++;
 			}
@@ -829,48 +819,48 @@ int lprimary(){
 
 int rel_op(){
 	enum token nxtTk;
-	printf("\nRunning rel_op production\n");
+	//printf("\nRunning rel_op production\n");
 	nxtTk = next_token(tkPtr);
 	
 	switch(nxtTk){
 		//Production 34
 		case LESSOP:
-			printf("\nRunning rel_op production rule 34\n");
+			//printf("\nRunning rel_op production rule 34\n");
 			if(!match(LESSOP,statePtr)){
 				lexErr++;
 			}
 			break;
 		//Production 35
 		case LESSEQUALOP:
-			printf("\nRunning rel_op production rule 35\n");
+			//printf("\nRunning rel_op production rule 35\n");
 			if(!match(LESSEQUALOP,statePtr)){
 				lexErr++;
 			}
 			break;
 		//Production 36
 		case GREATEROP:
-			printf("\nRunning rel_op production rule 36\n");
+			//printf("\nRunning rel_op production rule 36\n");
 			if(!match(GREATEROP,statePtr)){
 				lexErr++;
 			}
 			break;
 		//Production 37
 		case GREATEREQUALOP:
-			printf("\nRunning rel_op production rule 37\n");
+			//printf("\nRunning rel_op production rule 37\n");
 			if(!match(GREATEREQUALOP,statePtr)){
 				lexErr++;
 			}
 			break;
 		//Production 38
 		case EQUALOP:
-			printf("\nRunning rel_op production rule 38\n");
+			//printf("\nRunning rel_op production rule 38\n");
 			if(!match(EQUALOP,statePtr)){
 				lexErr++;
 			}
 			break;
 		//Production 39
 		case NOTEQUALOP:
-			printf("\nRunning rel_op production rule 39\n");
+			//printf("\nRunning rel_op production rule 39\n");
 			if(!match(LESSOP,statePtr)){
 				lexErr++;
 			}
@@ -1206,18 +1196,7 @@ void init(int argc,char *argv[]){		//initalize the program (getting the input an
 			
 			getOutputFile(outputFile);
 			listingFileHandling(listingFile);
-			//copyAndPaste(inputFile, outputFile);	//copies information from file 1 (input) to file 2 (output) and listing always gets it
-			
-			//THIS LOOP WILL BE REPLACED BY THE PARSER
-			//Loop until the 'end token is read
-			
-//			while(tok != END){
-//				//Print token information to output file
-//				//Use char tokenBuffer
-//				tok = scanner(tkPtr,in_file,out_file,list_file);	//this is to make the program use the token functions
-//				fprintf(list_file,"\n");
-//				printf("Token type num: %d	Token string: %s \n",tok,tkPtr);
-//			}
+	
 			fprintf(list_file,"%d .		",listNum);
 			parser();
 			temporaryFileHandling();			
@@ -1241,8 +1220,6 @@ void getInputFile(char *file){
 	}
 	else{	//if it does exist, just open it
 		readAndParse(file, 1);
-		//sscanf(file, "%[a-zA-Z0-9]", tempBase);
-		//strcpy(inputBase, tempBase);
 		in_file = fopen(file, "rb+");
 		printf("INPUT: File exists and is opened: %s\n", file);
 		inputFileFlag++;
@@ -1260,7 +1237,6 @@ void getOutputFile(char *file){
 	else{	//if file does exists
 		outputFileFlag++;	//set flag to know that file is open
 		readAndParse(file, 2);
-		//out_file = fopen(file, "r");
 		printf("OUTPUT: File exists: %s\n", file);
 	}
 }
@@ -1270,11 +1246,9 @@ void getOutputFile(char *file){
 void copyAndPaste(char *file1, char *file2){	//setup to work as (from, to) (from, destination) THIS ONLY WORKS FOR INPUT / OUTPUT RIGHT NOW
 	in_file = fopen(file1, "r");
 	out_file = fopen(file2, "w");
-//	list_file = fopen(listingFile, "w");
 	while(!feof(in_file)){
 		fgets(fileInformation, 1000, in_file);	//read the "from" file
 		printf("\n%s", fileInformation);
-		//int tkFlg = scanner(fileInformation);
 		fprintf(out_file, fileInformation);		//put onto the "destination" file
 		
 	}
@@ -1284,11 +1258,9 @@ void copyAndPaste(char *file1, char *file2){	//setup to work as (from, to) (from
 
 int extensionCheck(char *file){
 	if(strchr(file, '.') != NULL){
-//		printf("There is a '.' for %s\n", file);
 		return 1;
 	}
 	else{
-//		printf("There is NOT '.' for %s\n", file);
 		return 0;
 	}
 }

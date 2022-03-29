@@ -1,0 +1,9 @@
+begin
+BB:= AA + C;
+read (A,BB);
+write (A,BB,X,Y);
+if (!(A/2>7))then
+write (A);
+else
+A:=7;endif
+end
