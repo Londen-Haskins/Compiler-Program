@@ -34,8 +34,6 @@ fpos_t posN, posA; //File pointer position for parser and position for match()
 void clear_buffer(char*);
 enum token check_reserved(char*tk);
 void tokenList();
-//int lexical_error(char*,flag,FILE*);
-//void token_ident(token, char*);
 void add_char(char* buf,char c,int p);
 void parser();
 bool match(enum token token, char *tokBuf);

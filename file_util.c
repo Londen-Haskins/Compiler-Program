@@ -1242,20 +1242,6 @@ void getOutputFile(char *file){
 }
 
 
-
-void copyAndPaste(char *file1, char *file2){	//setup to work as (from, to) (from, destination) THIS ONLY WORKS FOR INPUT / OUTPUT RIGHT NOW
-	in_file = fopen(file1, "r");
-	out_file = fopen(file2, "w");
-	while(!feof(in_file)){
-		fgets(fileInformation, 1000, in_file);	//read the "from" file
-		printf("\n%s", fileInformation);
-		fprintf(out_file, fileInformation);		//put onto the "destination" file
-		
-	}
-}
-
-
-
 int extensionCheck(char *file){
 	if(strchr(file, '.') != NULL){
 		return 1;

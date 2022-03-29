@@ -60,25 +60,11 @@ void programTerminated();
 int extensionCheck(char *file);
 void takeAndTest(char *file); 
 void listingFileHandling(char *file);	//this is going to be for the listing file when we need it
-void copyAndPaste(char *file1, char *file2);
 void readAndParse(char *file, int fileType);	//gets the base and ext of a file name
 void openFile(char inName[50]);
 int testForDupName(char *file);
 void closeOpenedFiles();
 void temporaryFileHandling();
-
-
-////////////////////////
-// CURRENTLY TESTING  //
-void tokenArray(char *str);
-bool isDelimiter(char ch);
-bool isOperator(char ch);
-bool isKeyword(char* str);
-bool isInteger(char* str);
-bool validIdentifier(char* str);
-char* subString(char* str, int left, int right);
-
-
 
 
 
