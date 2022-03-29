@@ -13,19 +13,18 @@ enum token scanner(char *tokBuf,FILE *inFile,FILE *out_file,FILE *listFile){
 	
 	clear_buffer(tokBuf);
 	fpos_t pos;
-	
-	fprintf(listFile,"%d .		",listNum);
-		
+			
 	//Eat whitespace and start main scanner loop
 	do{
 		c = fgetc(inFile);
 		//Change to while loop
 		if(isspace(c)){
-			if(c == '\n' || c == '\v' || c == '\r'){
+			if(c == '\n'){
 				listNum++;
+				fprintf(listFile,"\n%d .		",listNum);
 			}
 			else{
-				fputs(tokBuf,listFile);
+				fprintf(listFile,"%c",c);
 			}
 			//DO A CHECK HERE TO LOOK AHEAD AND SEE IF NEXT CHARACTER IS WHITESPACE
 			//THEN RETREAT IN_FILE POINTER IF IT'S NOT
@@ -1219,6 +1218,7 @@ void init(int argc,char *argv[]){		//initalize the program (getting the input an
 //				fprintf(list_file,"\n");
 //				printf("Token type num: %d	Token string: %s \n",tok,tkPtr);
 //			}
+			fprintf(list_file,"%d .		",listNum);
 			parser();
 			temporaryFileHandling();			
 			
@@ -1243,7 +1243,7 @@ void getInputFile(char *file){
 		readAndParse(file, 1);
 		//sscanf(file, "%[a-zA-Z0-9]", tempBase);
 		//strcpy(inputBase, tempBase);
-		in_file = fopen(file, "r");
+		in_file = fopen(file, "rb+");
 		printf("INPUT: File exists and is opened: %s\n", file);
 		inputFileFlag++;
 	}
