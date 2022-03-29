@@ -219,6 +219,9 @@ enum token check_reserved(char *tk)
 	else if(!strcmp(tk, "!")){
 		return NOTOP;
 	}
+	else if(!strcmp(tk, ",")){
+		return COMMA;
+	}
 	//else if(!strcmp(tk, ";")){
 	else if(tk[0] == ';'){
 		return SEMICOLON;
@@ -250,6 +253,45 @@ enum token check_reserved(char *tk)
 	printf("Token does not have match in reserved words or is EOL\n");
 	return ERROR;
 
+}
+
+void tokenList(){
+
+	tkList[0] = "begin";
+	tkList[1] = "end";
+	tkList[2] = "read";
+	tkList[3] = "write";
+	tkList[4] = "if";
+	tkList[5] = "then";
+	tkList[6] = "else";
+	tkList[7] = "endif";
+	tkList[8] = "while";
+	tkList[9] = "endwhile";
+	tkList[10] = "id";
+	tkList[11] = "intliteral";
+	tkList[12] = "falseop";
+	tkList[13] = "trueop";
+	tkList[14] = "nullop";
+	tkList[15] = "lparen";
+	tkList[16] = "rparen";
+	tkList[17] = "semicolon";
+	tkList[18] = "comma";
+	tkList[19] = "assinop";
+	tkList[20] = "plusop";
+	tkList[21] = "minusop";
+	tkList[22] = "multop";
+	tkList[23] = "divop";
+	tkList[24] = "notop";
+	tkList[25] = "lessequalop";
+	tkList[26] = "greaterop";
+	tkList[27] = "greaterequalop";
+	tkList[28] = "equalop";
+	tkList[29] = "notequalop";
+	tkList[30] = "EOF";
+	tkList[31] = "SPACE";
+	tkList[32] = "ERROR";
+	
+	return;
 }
 
 //Clears the token buffer
@@ -294,7 +336,7 @@ bool match(enum token token, char *tokBuf){
 			stateBufP++;
 		}
 		fsetpos(in_file, &posA);
-		//fprintf("EXPECTED TOKEN:   %s   ACTUAL TOKEN:   %s\n",,);
+		fprintf(out_file,"EXPECTED TOKEN:   %s   ACTUAL TOKEN:   %s\n",tkList[token],tkPtr);
 		return true;
 	}
 	else{
@@ -402,7 +444,13 @@ int statement(){
 			if(!match(READ,statePtr)){
 				lexErr++;
 			}
+			if(!match(LPAREN,statePtr)){
+				lexErr++;
+			}
 			id_list();
+			if(!match(RPAREN,statePtr)){
+				lexErr++;
+			}
 			if(!match(SEMICOLON,statePtr)){
 				lexErr++;
 			}
@@ -413,7 +461,13 @@ int statement(){
 			if(!match(WRITE,statePtr)){
 				lexErr++;
 			}
+			if(!match(LPAREN,statePtr)){
+				lexErr++;
+			}
 			expr_list();
+			if(!match(RPAREN,statePtr)){
+				lexErr++;
+			}
 			if(!match(SEMICOLON,statePtr)){
 				lexErr++;
 			}
@@ -486,9 +540,8 @@ int id_list(){
 	if(!match(ID,statePtr)){
 		lexErr++;
 	}
-	
 	repeat = next_token(tkPtr);
-	while(repeat=COMMA){
+	while(repeat==COMMA){
 		if(!match(COMMA,statePtr)){
 			lexErr++;
 		}
@@ -504,9 +557,12 @@ int expr_list(){
 	printf("\nRunning expr_list production\n");
 	expression();
 	repeat = next_token(tkPtr);
-	while(repeat=COMMA){
-		match(COMMA,statePtr);
+	while(repeat==COMMA){
+		if(!match(COMMA,statePtr)){
+			lexErr++;
+		}
 		expr_list();
+		repeat = next_token(tkPtr);
 	}
 	return 0;
 }
@@ -1129,6 +1185,7 @@ void init(int argc,char *argv[]){		//initalize the program (getting the input an
 	stateBufP = 0; //Position for statement buffer
 	tkPtr = &tokenBuffer[0]; //Ptr to token buffer
 	statePtr = &stateBuf[0];
+	tokenList();
 
  	if(argc <= 3){
 		if(argc == 2){

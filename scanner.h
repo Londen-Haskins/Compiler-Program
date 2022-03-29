@@ -21,9 +21,10 @@ enum token{
 		FALSEOP,TRUEOP,NULLOP,LPAREN,RPAREN,
 		SEMICOLON,COMMA,ASSIGNOP,PLUSOP,MINUSOP,
 		MULTOP,DIVOP,NOTOP,LESSOP,LESSEQUALOP,
-		GREATEROP,GREATEREQUALOP,EQUALOP,NOTEQUALOP,SCANEOF,EOL,ERROR,SPACE
+		GREATEROP,GREATEREQUALOP,EQUALOP,NOTEQUALOP,SCANEOF,SPACE,ERROR
 	};
 	
+const char *tkList[32];
 
 enum token tok,tokTemp,tkTmp;
 enum token scanner(char *buffer,FILE *inFile,FILE *out_file,FILE *listFile);
@@ -32,6 +33,7 @@ fpos_t posN, posA; //File pointer position for parser and position for match()
 
 void clear_buffer(char*);
 enum token check_reserved(char*tk);
+void tokenList();
 //int lexical_error(char*,flag,FILE*);
 //void token_ident(token, char*);
 void add_char(char* buf,char c,int p);
