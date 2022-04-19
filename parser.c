@@ -6,6 +6,7 @@
 #include <stdbool.h>	//for boolean
 #include "file_util.h"	//include file_util header
 #include "parser.h"	//include parser header
+#include "scanner.h" //For token type
 
 //The parser will facilitate printing to list file.
 //Listing will delimit at new line token, increase listing file line number, and repeat
@@ -123,6 +124,7 @@ int statement_list(){
 int statement(){
 	//enum token nxtTk;
 	int nxtTk;
+	//expr_rec target, source;
 
 	//printf("\nRunning statement production\n");
 	nxtTk = next_token(tkPtr);
@@ -131,16 +133,16 @@ int statement(){
 		//Production 3
 		case 10:
 			//printf("\nRunning statement production rule 3\n");
-			if(!match(ID,statePtr)){
-				lexErr++;
-			}
+			ident();
 			if(!match(ASSIGNOP,statePtr)){
 				lexErr++;
-			}			
+			}		
+			//expression(&source);	
 			expression();
 			if(!match(SEMICOLON,statePtr)){
 				lexErr++;
 			}
+			//#assign(tareget,source);
 			break;
 		//Production 4
 		case 2:
@@ -241,9 +243,7 @@ int if_tail(){
 int id_list(){
 	enum token repeat;
 	//printf("\nRunning id_list production\n");
-	if(!match(ID,statePtr)){
-		lexErr++;
-	}
+	ident();
 	repeat = next_token(tkPtr);
 	while(repeat==COMMA){
 		if(!match(COMMA,statePtr)){
@@ -272,6 +272,7 @@ int expr_list(){
 }
 
 //Production 12
+//int expression(expr_recStr record){
 int expression(){
 	enum token repeat;
 	//printf("\nRunning expression production\n");
@@ -326,9 +327,7 @@ int factor(){
 		//Production 16
 		case ID:
 			//printf("\nRunning factor production rule 16\n");
-			if(!match(ID,statePtr)){
-				lexErr++;
-			}
+			ident();
 			break;
 		//Production 17
 		case INTLITERAL:
@@ -336,6 +335,7 @@ int factor(){
 			if(!match(INTLITERAL,statePtr)){
 				lexErr++;
 			}
+			//#process_id();
 			break;
 	}
 	return 0;	
@@ -487,9 +487,7 @@ int lprimary(){
 			break;
 		//Production 29
 		case ID:
-			if(!match(ID,statePtr)){
-				lexErr++;
-			}
+			ident();
 			break;
 		//Production 30
 		case LPAREN:
@@ -575,3 +573,12 @@ int rel_op(){
 	return 0;
 }
 
+expr_recStr ident(){
+	if(!match(ID,statePtr))
+	{
+		lexErr++;
+	}
+	expr_recStr temp = process_idAct();
+	
+	return temp;
+}

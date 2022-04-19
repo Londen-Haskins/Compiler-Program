@@ -4,17 +4,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include "code_gen.h" //For expression record data type
 
 #define TKLEN 1000
-
-enum token{
-		BEGIN,END,READ,WRITE,IF,THEN,ELSE,
-		ENDIF,WHILE,ENDWHILE,ID,INTLITERAL,
-		FALSEOP,TRUEOP,NULLOP,LPAREN,RPAREN,
-		SEMICOLON,COMMA,ASSIGNOP,PLUSOP,MINUSOP,
-		MULTOP,DIVOP,NOTOP,LESSOP,LESSEQUALOP,
-		GREATEROP,GREATEREQUALOP,EQUALOP,NOTEQUALOP,SCANEOF,SPACE,ERROR
-	};
 
 char stateBuf[TKLEN];
 char tokenBuffer[TKLEN];
@@ -45,6 +37,7 @@ int multiplication();
 int unary();
 int lprimary();
 int rel_op();
+expr_recStr ident();
 
 
 #endif
