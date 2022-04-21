@@ -142,7 +142,7 @@ int statement(){
 			if(!match(SEMICOLON,statePtr)){
 				lexErr++;
 			}
-			//#assign(tareget,source);
+			//assignAct(target,source);
 			break;
 		//Production 4
 		case 2:
@@ -242,8 +242,10 @@ int if_tail(){
 //Production 10
 int id_list(){
 	enum token repeat;
+	expr_recStr id;
 	//printf("\nRunning id_list production\n");
-	ident();
+	id = ident();
+	read_idAct(id);
 	repeat = next_token(tkPtr);
 	while(repeat==COMMA){
 		if(!match(COMMA,statePtr)){
@@ -258,7 +260,10 @@ int id_list(){
 //Production 11
 int expr_list(){
 	enum token repeat;
+	expr_recStr id;
 	//printf("\nRunning expr_list production\n");
+	//expression(&id);
+	//write_expr(id);
 	expression();
 	repeat = next_token(tkPtr);
 	while(repeat==COMMA){
@@ -272,14 +277,22 @@ int expr_list(){
 }
 
 //Production 12
-//int expression(expr_recStr record){
+//int expression(expr_recStr *record){
 int expression(){
 	enum token repeat;
+	expr_recStr left,right;
+	op_recStr op;
+	
 	//printf("\nRunning expression production\n");
+	//term(&left);
 	term();
 	repeat = next_token(tkPtr);
 	while(repeat==PLUSOP || repeat==MINUSOP){
 		add_op();
+		//add_op(&op);
+		//term(&right);
+		//left = gen_infixAct(left,op,right);
+		//result = left;
 		term();
 		repeat = next_token(tkPtr);
 	}
@@ -287,31 +300,44 @@ int expression(){
 }
 
 //Production 13
+//void term(expr_recStr*operand){
 int term(){
 	enum token repeat;
+	//expr_recStr left, right;
+	//op_recStr op;
 	//printf("\nRunning term production\n");
+	//factor(&left);
 	factor();
 	repeat = next_token(tkPtr);
 	while(repeat==MULTOP || repeat==DIVOP){
 		mult_op();
+		//mult_op(&op);
+		//factor(&right);
+		//left = gen_infixAct(left,op,right);
 		factor();
 		repeat = next_token(tkPtr);
 	}
+	//operand = left;
 	return 0;
 }
 
+//void factor(expr_recStr*operand){
 int factor(){
 	enum token nxtTk;
+	//expr_recStr temp;
 	//printf("\nRunning factor production\n");
 	nxtTk = next_token(tkPtr);
 	switch(nxtTk){
 		//Production 14
 		case LPAREN:
 			//printf("\nRunning factor production rule 14\n");
+			
 			if(!match(LPAREN,statePtr)){
 				lexErr++;
 			}
 			expression();
+			//expression(temp);
+			//*operand = temp;
 			if(!match(RPAREN,statePtr)){
 				lexErr++;
 			}
@@ -323,29 +349,34 @@ int factor(){
 				lexErr++;
 			}
 			factor();
+			//factor(temp);
+			//Add '-' to temp
+			//*operand = temp;
 			break;
 		//Production 16
 		case ID:
 			//printf("\nRunning factor production rule 16\n");
 			ident();
+			//*operand = ident();
 			break;
 		//Production 17
 		case INTLITERAL:
 			//printf("\nRunning factor production rule 17\n");
+			//*operand = process_literalAct();
 			if(!match(INTLITERAL,statePtr)){
 				lexErr++;
 			}
-			//#process_id();
 			break;
 	}
 	return 0;	
 }
 
+//void add_op(op_recStr *op){
 int add_op(){
 	enum token nxtTk;
 	//printf("\nRunning add_op production\n");
 	nxtTk = next_token(tkPtr);
-	
+	//*op = process_opAct();
 	switch(nxtTk){
 		//Production 18
 		case PLUSOP:
@@ -365,9 +396,11 @@ int add_op(){
 	return 0;
 }
 
+//void mult_op(op_recStr *op){
 int mult_op(){
 	enum token nxtTk;
 	//printf("\nRunning mult_op production\n");
+	//*op = process_opAct();
 	nxtTk = next_token(tkPtr);
 	
 	switch(nxtTk){
@@ -390,49 +423,75 @@ int mult_op(){
 }
 
 //Production 22
+//expr_recStr condition(){
 int condition(){
 	enum token repeat;
+	//expr_recStr left,right;
+	//op_recStr op;
 	//printf("\nRunning condition production\n");
+	//addition(&left);
 	addition();
 	repeat = next_token(tkPtr);
 	while(repeat==LESSOP || repeat==LESSEQUALOP || repeat==GREATEROP || repeat==GREATEREQUALOP || repeat==NOTEQUALOP || repeat==EQUALOP){
+		//rel_op(&op);
+		//addition(&right);
+		//left = gen_infixAct(left,op,right);
 		rel_op();
 		addition();
 		repeat = next_token(tkPtr);
 	}
+	//return left;
 	return 0;
 }
 
 //Production 23
+//void addition(expr_recStr *operand){
 int addition(){
 	enum token repeat;
+	//expr_recStr left,right;
+	//op_recStr op;
 	//printf("\nRunning addition production\n");
+	//multiplication(&right);
 	multiplication();
 	repeat = next_token(tkPtr);
 	while(repeat==PLUSOP || repeat==MINUSOP){
+		//add_op(&op);
+		//multiplication(&left);
+		//left = gen_infixAct(left,op,right);
 		add_op();
 		multiplication();
 		repeat = next_token(tkPtr);
 	}
+	//operand = left;
 	return 0;
 }
 
 //Production 24
+//void multiplication(expr_recStr *operand){
 int multiplication(){
 	enum token repeat;
+	//expr_recStr left,right;
+	//op_recStr op;
 	//printf("\nRunning multiplication production\n");
+	//unary(&left);
 	unary();
 	repeat = next_token(tkPtr);
 	while(repeat==MULTOP || repeat==DIVOP){
+		//mult_op(&op);
+		//unary(&right);
+		//left = gen_infixAct(left,op,right);
 		mult_op();
 		unary();
 		repeat = next_token(tkPtr);
 	}
+	//operand = left;
 	return 0;
 }
 
+//void unary(expr_recStr *operand){
 int unary(){
 	enum token nxtTk;
+	//expr_recStr temp;
 	//printf("\nRunning unary production\n");
 	nxtTk = next_token(tkPtr);
 	
@@ -442,6 +501,9 @@ int unary(){
 			if(!match(NOTOP,statePtr)){
 				lexErr++;
 			}
+			//unary(temp);
+			//Add '!' to record
+			//*operand = temp;
 			unary();
 			break;
 		//Production 26
@@ -449,31 +511,41 @@ int unary(){
 			if(!match(MINUSOP,statePtr)){
 				lexErr++;
 			}
+			//unary(temp);
+			//Add '-' to record
+			//*operand = temp;
 			unary();
 			break;
 		//Production 27
 		case INTLITERAL:
 			lprimary();
+			//*operand = lprimary();
 			break;
 		case ID:
 			lprimary();
+			//*operand = lprimary();
 			break;
 		case LPAREN:
 			lprimary();
+			//*operand = lprimary();
 			break;
 		case FALSEOP:
 			lprimary();
+			//*operand = lprimary();
 			break;
 		case TRUEOP:
 			lprimary();
+			//*operand = lprimary();
 			break;
 		case NULLOP:
 			lprimary();
+			//*operand = lprimary();
 			break;
 	}
 	return 0;
 }
 
+//void lprimary(expr_recStr *operand){
 int lprimary(){
 	enum token nxtTk;
 	nxtTk = next_token(tkPtr);
@@ -484,6 +556,7 @@ int lprimary(){
 			if(!match(INTLITERAL,statePtr)){
 				lexErr++;
 			}
+			//*operand = process_literalAct();
 			break;
 		//Production 29
 		case ID:
@@ -504,26 +577,31 @@ int lprimary(){
 			if(!match(FALSEOP,statePtr)){
 				lexErr++;
 			}
+			//*operand = process_literalAct();
 			break;
 		//Production 32
 		case TRUEOP:
 			if(!match(TRUEOP,statePtr)){
 				lexErr++;
 			}
+			//*operand = process_literalAct();
 			break;
 		//Production 33
 		case NULLOP:
 			if(!match(NULLOP,statePtr)){
 				lexErr++;
 			}
+			//*operand = process_literalAct();
 			break;
 	}
 	return 0;
 }
 
+//void rel_op(op_recStr *op){
 int rel_op(){
 	enum token nxtTk;
 	//printf("\nRunning rel_op production\n");
+	//*op = process_opAct();
 	nxtTk = next_token(tkPtr);
 	
 	switch(nxtTk){

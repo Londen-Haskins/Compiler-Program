@@ -64,7 +64,7 @@ void write_exprAct(expr_recStr temp){
 	return;
 }
 
-expr_recStr gen_infixAct(expr_recStr left,expr_recStr right){
+expr_recStr gen_infixAct(expr_recStr left,op_recStr op,expr_recStr right){
 	expr_recStr temp;
 	
 	//set expr_rec temp to enum TEMPEXPR
