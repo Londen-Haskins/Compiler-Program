@@ -76,6 +76,7 @@ void temporaryFileHandling(){		//parameter = temp_file (its a pointer to the tem
 	strcpy(tempFile, buffer);	//stores the buffer name into tempFile
 	strcat(tempFile, ".txt");
 	temp_file = fopen(tempFile, "w");
+	fgetpos(temp_file, &tempFin);
 	tempFileFlag++;
 	printf("TEMP FILE: New file name: %s\n", tempFile);
 	}
@@ -309,18 +310,6 @@ void init(int argc,char *argv[]){		//initalize the program (getting the input an
 	outputFileFlag = 0;
 	listFileFlag = 0;
 	tempFileFlag = 0;
-	listNum = 1;
-	lexErr = 0;
-	synErr = 0;
-	tempNum = 0;
-	tableIndex = 0;
-	stateBufP = 0; //Position for statement buffer
-	tkPtr = &tokenBuffer[0]; //Ptr to token buffer
-	listPtr = &listBuffer[0];//Ptr to listing buffer
-	listT = false; //Toggle for listing file writing
-	errFound = false;
-	statePtr = &stateBuf[0];
-	tokenList();
 
  	if(argc <= 3){
 		if(argc == 2){

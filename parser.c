@@ -77,8 +77,7 @@ enum token next_token(){
 int system_goal(){
 	program_rule();
 	printf("\n PARSER SUCCESSFUL\n");
-	fprintf(list_file,"\nNumber of syntax errors: %d\n",lexErr);
-	fprintf(list_file,"\nNumber of lexical errors: %d\n",synErr);
+	finishAct();
 	
 	return 0;
 }
@@ -273,9 +272,10 @@ int id_list(){
 int expr_list(){
 	enum token repeat;
 	expr_recStr id = {};
-	//printf("\nRunning expr_list production\n");
+	printf("\nRunning expr_list production\n");
 	expression(&id);
 	write_exprAct(id);
+	printf("\n EXPRLIST: %s \n",id.expression);
 	//expression();
 	repeat = next_token(tkPtr);
 	while(repeat==COMMA){
@@ -283,6 +283,8 @@ int expr_list(){
 			lexErr++;
 		}
 		expr_list();
+		write_exprAct(id);
+	
 		repeat = next_token(tkPtr);
 	}
 	return 0;
@@ -304,7 +306,10 @@ void expression(expr_recStr *record){
 		//add_op();
 		add_op(&op);
 		term(&right);
+		printf("\n EXPRESSION: %s %s %s\n",left.expression,op.operation,right.expression);
+		fprintf(temp_file,"%s %s %s\n",left.expression,op.operation,right.expression);
 		left = gen_infixAct(left,op,right);
+		puts(left.expression);
 		record = &left;
 		//term();
 		repeat = next_token(tkPtr);
@@ -316,8 +321,8 @@ void expression(expr_recStr *record){
 void term(expr_recStr*operand){
 //int term(){
 	enum token repeat;
-	expr_recStr left = {};
-	expr_recStr right = {};
+	expr_recStr left;
+	expr_recStr right;
 	op_recStr op = {};
 	printf("\nRunning term production\n");
 	factor(&left);
@@ -331,11 +336,12 @@ void term(expr_recStr*operand){
 		//factor();
 		repeat = next_token(tkPtr);
 	}
-	operand = &left;
+	printf("\n TERM: %s %s\n",left.expression,right.expression);
+	*operand = left;
 	return;
 }
 
-void factor(expr_recStr*operand){
+void factor(expr_recStr *operand){
 //int factor(){
 	enum token nxtTk;
 	expr_recStr temp = {};
@@ -377,9 +383,11 @@ void factor(expr_recStr*operand){
 		//Production 17
 		case INTLITERAL:
 			printf("\nRunning factor production rule 17\n");
-			*operand = process_literalAct();
 			if(!match(INTLITERAL,statePtr)){
 				lexErr++;
+			}
+			else{
+				*operand = process_literalAct();
 			}
 			break;
 	}
@@ -400,6 +408,7 @@ void add_op(op_recStr *op){
 			}
 			else{
 				*op = process_opAct();
+				printf("\n PLUS OP: %s \n",op);
 			}
 			break;
 		//Production 19
@@ -420,7 +429,6 @@ void mult_op(op_recStr *op){
 //int mult_op(){
 	enum token nxtTk;
 	//printf("\nRunning mult_op production\n");
-	*op = process_opAct();
 	nxtTk = next_token(tkPtr);
 	
 	switch(nxtTk){
@@ -430,12 +438,18 @@ void mult_op(op_recStr *op){
 			if(!match(MULTOP,statePtr)){
 				lexErr++;
 			}
+			else{
+				*op = process_opAct();
+			}
 			break;
 		//Production 21
 		case DIVOP:
 			//printf("\nRunning mult_op production rule 21\n");
 			if(!match(DIVOP,statePtr)){
 				lexErr++;
+			}
+			else{
+				*op = process_opAct();
 			}
 			break;
 	}
@@ -484,7 +498,7 @@ void addition(expr_recStr *operand){
 		//multiplication();
 		repeat = next_token(tkPtr);
 	}
-	operand = &left;
+	*operand = left;
 	return;
 }
 
@@ -496,22 +510,19 @@ void multiplication(expr_recStr operand){
 	expr_recStr right = {};
 	op_recStr op = {};
 	//printf("\nRunning multiplication production\n");
-	unary(left);
-	//unary();
+	unary(&left);
 	repeat = next_token(tkPtr);
 	while(repeat==MULTOP || repeat==DIVOP){
 		mult_op(&op);
-		unary(right);
+		unary(&right);
 		left = gen_infixAct(left,op,right);
-		//mult_op();
-		//unary();
 		repeat = next_token(tkPtr);
 	}
 	operand = left;
 	return;
 }
 
-void unary(expr_recStr operand){
+void unary(expr_recStr *operand){
 //int unary(){
 	enum token nxtTk;
 	expr_recStr temp = {};
@@ -525,9 +536,9 @@ void unary(expr_recStr operand){
 				lexErr++;
 			}
 			strcat(temp.expression,"!");
-			unary(temp);
+			unary(&temp);
 			//Add '!' to record
-			operand = temp;
+			*operand = temp;
 			//unary();
 			break;
 		//Production 26
@@ -536,42 +547,35 @@ void unary(expr_recStr operand){
 				lexErr++;
 			}
 			strcat(temp.expression,"-");
-			unary(temp);
+			unary(&temp);
 			//Add '-' to record
-			operand = temp;
+			*operand = temp;
 			//unary();
 			break;
 		//Production 27
 		case INTLITERAL:
-			//lprimary();
-			lprimary(operand);
+			lprimary(&operand);
 			break;
 		case ID:
-			//lprimary();
-			//*operand = lprimary();
-			operand = ident();
+			lprimary(&operand);
 			break;
 		case LPAREN:
-			//lprimary();
-			lprimary(operand);
+			lprimary(&operand);
 			break;
 		case FALSEOP:
-			//lprimary();
-			lprimary(operand);
+			lprimary(&operand);
 			break;
 		case TRUEOP:
-			//lprimary();
-			lprimary(operand);
+			lprimary(&operand);
 			break;
 		case NULLOP:
-			//lprimary();
-			lprimary(operand);
+			lprimary(&operand);
 			break;
 	}
 	return 0;
 }
 
-void lprimary(expr_recStr operand){
+void lprimary(expr_recStr *operand){
 //int lprimary(){
 	enum token nxtTk;
 	nxtTk = next_token(tkPtr);
@@ -582,11 +586,11 @@ void lprimary(expr_recStr operand){
 			if(!match(INTLITERAL,statePtr)){
 				lexErr++;
 			}
-			operand = process_literalAct();
+			*operand = process_literalAct();
 			break;
 		//Production 29
 		case ID:
-			operand = ident();
+			*operand = ident();
 			break;
 		//Production 30
 		case LPAREN:
@@ -603,21 +607,21 @@ void lprimary(expr_recStr operand){
 			if(!match(FALSEOP,statePtr)){
 				lexErr++;
 			}
-			operand = process_literalAct();
+			*operand = process_literalAct();
 			break;
 		//Production 32
 		case TRUEOP:
 			if(!match(TRUEOP,statePtr)){
 				lexErr++;
 			}
-			operand = process_literalAct();
+			*operand = process_literalAct();
 			break;
 		//Production 33
 		case NULLOP:
 			if(!match(NULLOP,statePtr)){
 				lexErr++;
 			}
-			operand = process_literalAct();
+			*operand = process_literalAct();
 			break;
 	}
 	return operand;
@@ -693,7 +697,7 @@ void rel_op(op_recStr *op){
 }
 
 expr_recStr ident(){
-	expr_recStr temp = {};
+	expr_recStr temp;
 	if(!match(ID,statePtr))
 	{
 		lexErr++;

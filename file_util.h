@@ -9,6 +9,7 @@ FILE *in_file, *out_file;	//pointers for files (input/output)
 FILE *list_file;			//listing file pointer
 FILE *temp_file;			//temp file pointer
 FILE *backup_file;
+fpos_t tempFin;
 
 
 

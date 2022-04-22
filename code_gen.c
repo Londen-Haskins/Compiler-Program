@@ -8,6 +8,7 @@
 #include "code_gen.h"	//include code_gen header
 #include "scanner.h" //For token buffer ptr
 #include "file_util.h" //For file pointer
+#include "parser.h"
 
 
 //Checks if symbol table contains symbol string
@@ -26,6 +27,7 @@ bool lookup(char*symbol){
 //Adds symbol string to table
 void enter(char*symbol){
 	strcpy(symbolTable[tableIndex],symbol);
+	fprintf(temp_file,"\nint %s\n",symbol);
 	tableIndex++;
 	return;
 }
@@ -36,30 +38,34 @@ void check_id(char*sym){
 	
 	if(!lookup(sym)){
 		enter(sym);
-		fprintf(temp_file,"\nint %s\n",sym);
-		//generate();
+		//fprintf(temp_file,"\nint %s\n",sym);
+	}
+	else{
+		generate(sym);	
 	}
 	
 	return;
 }
 
 char*getTemp(){
-	char t[25];
-	char p[25];
+	char t[25] = "Temp";
+	char p[25] = "Temp";
 	char i[2];
 	
-	strcat(t,"Temp");
-	strcat(p,"Temp");
+//	strcat(t,"Temp");
+//	strcat(p,"Temp");
 	sprintf(i,"%d", tempNum);
 	strcat(t,i);
 	if(lookup(t)){
 		tempNum++;
 		sprintf(i,"%d", tempNum);
 		strcat(p,i);
+		enter(p);
 	}
 	else{
 		sprintf(i,"%d", tempNum);
 		strcat(p,i);
+		enter(p);
 	}
 	
 	return p;
@@ -68,6 +74,8 @@ char*getTemp(){
 //Generates intermediate code string
 //Recieves up to 5 strings and writes to temp with ';'
 void generate(char*strA){
+	fprintf(temp_file,"%s",strA);
+	
 	
 	return;
 }
@@ -78,6 +86,18 @@ void startAct(){
 	tempNum = 0;
 	tableIndex = 0;
 	time_t t = time(NULL);
+	listNum = 1;
+	lexErr = 0;
+	synErr = 0;
+	tempNum = 0;
+	tableIndex = 0;
+	stateBufP = 0; //Position for statement buffer
+	tkPtr = &tokenBuffer[0]; //Ptr to token buffer
+	listPtr = &listBuffer[0];//Ptr to listing buffer
+	listT = false; //Toggle for listing file writing
+	errFound = false;
+	statePtr = &stateBuf[0];
+	tokenList();
   	struct tm tm = *localtime(&t);
   	fprintf(out_file,"//Current Date:\n//%d-%02d-%02d %02d:%02d:%02d\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
 	fprintf(out_file,"#include <stdio.h>\nint main()\n{\n");
@@ -85,14 +105,27 @@ void startAct(){
 }
 
 void finishAct(){
+	char c;
 	//write descriptive closing to list and output files
 	//concatenate the two parts of C code
+	fprintf(out_file,"\nexit()\n}\n");
+	fprintf(out_file,"\n COMPILATION COMPLETE\n");
+	fprintf(list_file,"\nNumber of syntax errors: %d\n",lexErr);
+	fprintf(list_file,"\nNumber of lexical errors: %d\n",synErr);
+	
+	fsetpos(temp_file, &tempFin);
+	c = fgetc(temp_file);
+    while (c != EOF)
+    {
+        fputc(c, out_file);
+        c = fgetc(temp_file);
+    }
 	
 	return;
 }
 
 void assignAct(expr_recStr left,expr_recStr right){
-	char phrase[50] = {};
+	char phrase[300] = {};
 	//Use 'left' = operator and 'right' to create C
 	//ie. assign(target,source) Makes "X = Temp1;"
 	strcat(phrase,left.expression);
@@ -164,6 +197,7 @@ expr_recStr process_idAct(){
 	expr_recStr idEXPR = {};
 	
 	//Check for ID
+	printf("\nProcessing ID %s\n",genBuffer);
 	check_id(genBuffer);
 	
 	//set new expr_rec to enum ID EXPR
