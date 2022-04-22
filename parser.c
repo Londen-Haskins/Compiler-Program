@@ -660,11 +660,12 @@ int rel_op(){
 }
 
 expr_recStr ident(){
+	expr_recStr temp;
 	if(!match(ID,statePtr))
 	{
 		lexErr++;
 	}
-	expr_recStr temp = process_idAct();
+	//expr_recStr temp = process_idAct();
 	
 	return temp;
 }

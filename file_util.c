@@ -7,6 +7,7 @@
 #include "file_util.h"	//include file_util header
 #include "scanner.h"	//include scannner header
 #include "parser.h"	//include scannner header
+#include "code_gen.h"
 
 
 void wrapUp(){			//closes opened files and delets them temp (deleting temp is currently disables "commented out")
@@ -311,6 +312,8 @@ void init(int argc,char *argv[]){		//initalize the program (getting the input an
 	listNum = 1;
 	lexErr = 0;
 	synErr = 0;
+	tempNum = 0;
+	tableIndex = 0;
 	stateBufP = 0; //Position for statement buffer
 	tkPtr = &tokenBuffer[0]; //Ptr to token buffer
 	listPtr = &listBuffer[0];//Ptr to listing buffer

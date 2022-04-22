@@ -6,15 +6,18 @@
 #include <ctype.h>
 #include <stdbool.h>
 
-//string symbol table[string array]
+#define TABLEC 100
+#define TABLEL 30
+char symbolTable[TABLEC][TABLEL];
+int tableIndex,tempNum;
 enum exprType{idEXPR,litEXPR,tempEXPR};
 
 typedef struct {
-	char operation[1];
+	char operation[2];
 }op_recStr;
 
 typedef struct {
-	char*expression;
+	char expression[70];
 	enum exprType type;
 }expr_recStr;
 
@@ -23,6 +26,8 @@ bool lookup(char*symbol);
 
 //Adds symbol string to table
 void enter(char*symbol);
+
+void check_id(char*symbol);
 
 //Generates intermediate code string
 //Recieves up to 5 strings and writes to temp with ';'
