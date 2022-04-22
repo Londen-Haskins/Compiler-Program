@@ -27,17 +27,17 @@ int statement_list();
 int statement();
 int id_list();
 int expr_list();
-int expression();
-int term();
-int factor();
-int add_op();
-int mult_op();
-int condition();
-int addition();
-int multiplication();
-int unary();
-int lprimary();
-int rel_op();
+int expression(expr_recStr *record);
+void term(expr_recStr*operand);
+void factor(expr_recStr*operand);
+void add_op(op_recStr *op);
+void mult_op(op_recStr *op);
+expr_recStr condition();
+void addition(expr_recStr *operand);
+void multiplication(expr_recStr operand);
+void unary(expr_recStr operand);
+void lprimary(expr_recStr operand);
+void rel_op(op_recStr *op);
 expr_recStr ident();
 
 

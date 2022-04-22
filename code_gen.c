@@ -1,11 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <unistd.h>		//to lookup files
 #include <sys/stat.h>	//for the check file
 #include <stdbool.h>	//for boolean
 #include "code_gen.h"	//include code_gen header
 #include "scanner.h" //For token buffer ptr
+#include "file_util.h" //For file pointer
 
 
 //Checks if symbol table contains symbol string
@@ -43,16 +45,18 @@ void check_id(char*sym){
 char*getTemp(){
 	char t[25];
 	char tempID[25];
+	char i[2];
 	strcat(t,"Temp");
-	strcat(t,(char)tempNum);
+	snprintf(i, 2, "%d", tempNum);
+	strcat(t,i);
 	if(lookup(t)){
 		tempNum++;
-		strcat(tempID,"Temp");
-		strcat(tempID,(char)tempNum);
+		snprintf(i, 2, "%d", tempNum);
+		strcat(t,i);
 	}
 	else{
-		strcat(tempID,"Temp");
-		strcat(tempID,(char)tempNum);
+		snprintf(i, 2, "%d", tempNum);
+		strcat(t,i);
 	}
 	
 	return tempID;
@@ -70,7 +74,10 @@ void startAct(){
 	//init code_gen variables
 	tempNum = 0;
 	tableIndex = 0;
-	
+	time_t t = time(NULL);
+  	struct tm tm = *localtime(&t);
+  	fprintf(out_file,"//Current Date:\n//%d-%02d-%02d %02d:%02d:%02d\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+	fprintf(out_file,"#include <stdio.h>\nint main()\n{\n");
 	return;
 }
 
@@ -90,7 +97,7 @@ void assignAct(expr_recStr left,expr_recStr right){
 	strcat(phrase,right.expression);
 	strcat(phrase,";\n");
 	
-	//fputs(phrase,temp_file);
+	fputs(phrase,temp_file);
 	
 	return;	
 }
@@ -103,7 +110,7 @@ void read_idAct(expr_recStr temp){
 	strcat(phrase,"scanf(""%d"",&");
 	strcat(phrase,temp.expression);
 	strcat(phrase,");\n");
-	//fputs(phrase,temp_file);
+	fputs(phrase,temp_file);
 	
 	return;
 }
@@ -117,7 +124,7 @@ void write_exprAct(expr_recStr temp){
 	strcat(phrase,"printf(""%d\n"",");
 	strcat(phrase,temp.expression);
 	strcat(phrase,");\n");
-	//fputs(phrase,temp_file);
+	fputs(phrase,temp_file);
 	
 	
 	return;

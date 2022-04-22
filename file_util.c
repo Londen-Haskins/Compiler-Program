@@ -344,8 +344,9 @@ void init(int argc,char *argv[]){		//initalize the program (getting the input an
 			listingFileHandling(listingFile);
 	
 			fprintf(list_file,"%d .		",listNum);
+			temporaryFileHandling();
 			parser();
-			temporaryFileHandling();			
+						
 			
 		}	
 	}
