@@ -15,6 +15,7 @@ int listNum, lexErr, synErr, stateBufP;
 fpos_t posN, posA; //File pointer position for parser and position for match()
 enum token tok,tokTemp,tkTmp;
 const char *tkList[32];
+bool listT;
 
 
 void parser();

@@ -314,7 +314,8 @@ void init(int argc,char *argv[]){		//initalize the program (getting the input an
 	stateBufP = 0; //Position for statement buffer
 	tkPtr = &tokenBuffer[0]; //Ptr to token buffer
 	listPtr = &listBuffer[0];//Ptr to listing buffer
-	newL = 0; //Toggle for new line list fault
+	listT = false; //Toggle for listing file writing
+	errFound = false;
 	statePtr = &stateBuf[0];
 	tokenList();
 

@@ -6,11 +6,16 @@
 #include <stdbool.h>	//for boolean
 #include "file_util.h"	//include file_util header
 #include "scanner.h"	//include scannner header
+#include "parser.h"	//For listT boolean
 
 enum token scanner(char *tokBuf,FILE *inFile,FILE *out_file,FILE *listFile){	
 	char c,k;
 	int p;
+	bool comment;
 	
+	//Comment found loop
+	do{
+	comment = false;
 	clear_buffer(tokBuf);
 	fpos_t pos;
 			
@@ -20,13 +25,19 @@ enum token scanner(char *tokBuf,FILE *inFile,FILE *out_file,FILE *listFile){
 		//Change to while loop
 		if(isspace(c)){
 			if(c == '\n'){
-				//Bool to signal match not to advance point
-				listNum++;
-				fprintf(listFile,"\n%d .		",listNum);	
-				
+				//If listing toggle is enabled from match()
+				if(errFound){
+					fputs(errorBuffer,list_file); //Add error to listing file
+					clear_buffer(errorBuffer);
+					errFound = false;
+				}
+				if(listT){
+					listNum++;
+					fprintf(listFile,"\n%d .		",listNum);	
+				}
 			}
 			else{
-				fprintf(listFile,"%c",c);
+				//fprintf(listFile,"%c",c);
 			}
 			//DO A CHECK HERE TO LOOK AHEAD AND SEE IF NEXT CHARACTER IS WHITESPACE
 			//THEN RETREAT IN_FILE POINTER IF IT'S NOT
@@ -125,11 +136,18 @@ enum token scanner(char *tokBuf,FILE *inFile,FILE *out_file,FILE *listFile){
 				}
 				
 			}
+			//If it is a comment
 			else if(k == '-'){
+				comment = true;
+				if(listT){
+					fprintf(list_file," --");
+				}
 				
 				while(k != '\n'){
 					p++;
-					add_char(tokBuf,k,p);	
+					if(listT){
+						fprintf(list_file,"%c",k);
+					}
 					k = getc(inFile);
 					if(k == '\n'){
 						fgetpos(inFile, &pos);
@@ -145,6 +163,7 @@ enum token scanner(char *tokBuf,FILE *inFile,FILE *out_file,FILE *listFile){
 	//fputs(tokBuf,listFile); //Add buffer to listing file
 	memcpy(listBuffer,tokBuf, sizeof(tokBuf));	
 	}
+	}while(comment);//Comment found loop
 	return check_reserved(tokBuf);		
 }
 
@@ -248,7 +267,10 @@ enum token check_reserved(char *tk)
 	else if(!strcmp(tk," ")){
 		return SPACE;
 	}
-	printf("Token does not have match in reserved words or is EOL\n");
+	snprintf(errorTemp, ERRTMP,"\nLexical Error at line %d: Token %s is not recognized\n",listNum,tk);
+	strcat(errorBuffer,errorTemp);
+	clear_buffer(errorTemp);
+	synErr++;
 	return ERROR;
 
 }

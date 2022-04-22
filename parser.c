@@ -29,7 +29,9 @@ void parser(){
 bool match(enum token token, char *tokBuf){
 	enum token nxtTk;
 	int i = 0;
+	listT = true;
 	nxtTk = next_token();
+	listT = false;
 	fputs(listBuffer,list_file); //Add buffer to listing file
 	clear_buffer(listBuffer);
 	if(nxtTk == token){
@@ -43,13 +45,16 @@ bool match(enum token token, char *tokBuf){
 		return true;
 	}
 	else{
-		//Lexical error
-		fprintf(list_file,"\nMatch for token %d is false\n", token);
+		//Syntax error
 		while(tokenBuffer[i] != '\0'){
 			add_char(tokBuf,tokenBuffer[i],stateBufP);
 			i++;
 			stateBufP++;
 		}
+		errFound = true;
+		snprintf(errorTemp, ERRTMP,"\nSyntax Error at line %d: Token %s is false, expected %s\n",listNum,tkPtr,tkList[token]);
+		strcat(errorBuffer,errorTemp);
+		clear_buffer(errorTemp);
 		fsetpos(in_file, &posA);
 		fprintf(out_file,"EXPECTED TOKEN:   %s   ACTUAL TOKEN:   %s\n",tkList[token],tkPtr);
 		return false;
@@ -70,7 +75,8 @@ enum token next_token(){
 int system_goal(){
 	program_rule();
 	printf("\n PARSER SUCCESSFUL\n");
-	fprintf(list_file,"\nNumber of lexical errors: %d\n",lexErr);
+	fprintf(list_file,"\nNumber of syntax errors: %d\n",lexErr);
+	fprintf(list_file,"\nNumber of lexical errors: %d\n",synErr);
 	
 	return 0;
 }

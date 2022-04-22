@@ -1,7 +1,7 @@
 begin
 BB:= AA + C;
-read (A,BB);
-write (A,BB,X,Y);
+read ($,BB);
+write (A,BB,X,Y); --Add something here
 if (!(A/2>7))then
 write (A);
 else

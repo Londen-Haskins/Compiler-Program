@@ -4,12 +4,17 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <stdbool.h>
 
 #define TKLEN 1000
+#define ERRTMP 100
 char tokenBuffer[TKLEN];
 char listBuffer[TKLEN];
+char errorBuffer[TKLEN];
+char errorTemp[TKLEN];
 char *tkPtr, *statePtr, *listPtr;
-int listNum, lexErr, synErr, stateBufP,newL;
+int listNum, lexErr, synErr, stateBufP;
+bool errFound;
 
 
 
