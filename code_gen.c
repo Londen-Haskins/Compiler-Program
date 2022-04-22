@@ -34,8 +34,9 @@ void check_id(char*sym){
 	//Uses lookup to see if ID exists
 	//Uses enter and generate if it doesn't exist
 	
-	if(lookup(sym)){
+	if(!lookup(sym)){
 		enter(sym);
+		fprintf(temp_file,"\nint %s\n",sym);
 		//generate();
 	}
 	
@@ -44,22 +45,24 @@ void check_id(char*sym){
 
 char*getTemp(){
 	char t[25];
-	char tempID[25];
+	char p[25];
 	char i[2];
+	
 	strcat(t,"Temp");
-	snprintf(i, 2, "%d", tempNum);
+	strcat(p,"Temp");
+	sprintf(i,"%d", tempNum);
 	strcat(t,i);
 	if(lookup(t)){
 		tempNum++;
-		snprintf(i, 2, "%d", tempNum);
-		strcat(t,i);
+		sprintf(i,"%d", tempNum);
+		strcat(p,i);
 	}
 	else{
-		snprintf(i, 2, "%d", tempNum);
-		strcat(t,i);
+		sprintf(i,"%d", tempNum);
+		strcat(p,i);
 	}
 	
-	return tempID;
+	return p;
 }
 
 //Generates intermediate code string
@@ -89,7 +92,7 @@ void finishAct(){
 }
 
 void assignAct(expr_recStr left,expr_recStr right){
-	char phrase[50];
+	char phrase[50] = {};
 	//Use 'left' = operator and 'right' to create C
 	//ie. assign(target,source) Makes "X = Temp1;"
 	strcat(phrase,left.expression);
@@ -107,7 +110,7 @@ void read_idAct(expr_recStr temp){
 	//Generate scanf statement
 	//i.e. "scanf("%d",&x);"
 	
-	strcat(phrase,"scanf(""%d"",&");
+	strcat(phrase,"scanf('%d',&");
 	strcat(phrase,temp.expression);
 	strcat(phrase,");\n");
 	fputs(phrase,temp_file);
@@ -116,12 +119,12 @@ void read_idAct(expr_recStr temp){
 }
 
 void write_exprAct(expr_recStr temp){
-	char phrase[50];
+	char phrase[50] = {};
 	//Generate scanf statement
 	//Depends on exprType
 	//i.e. "printf("%d\n",x);"
 	
-	strcat(phrase,"printf(""%d\n"",");
+	strcat(phrase,"printf('%d',");
 	strcat(phrase,temp.expression);
 	strcat(phrase,");\n");
 	fputs(phrase,temp_file);
@@ -131,8 +134,8 @@ void write_exprAct(expr_recStr temp){
 }
 
 expr_recStr gen_infixAct(expr_recStr left,op_recStr op,expr_recStr right){
-	expr_recStr temp;
-	char buffer[50];
+	expr_recStr temp = {};
+	char buffer[50] = {};
 	
 	//set expr_rec temp to enum TEMPEXPR
 	temp.type = 2;
@@ -146,31 +149,36 @@ expr_recStr gen_infixAct(expr_recStr left,op_recStr op,expr_recStr right){
 }
 
 expr_recStr process_literalAct(){
-	expr_recStr litEXPR;
+	expr_recStr litEXPR = {};
 	
 	//set new expr_rec to enum LITERAL EXPR
 	litEXPR.type = 1;
 	//set string to token buffer (which is a number)
-	strcat(litEXPR.expression,tkPtr);
+	strcat(litEXPR.expression,genBuffer);
+	clear_buffer(genBuffer);
 	
 	return litEXPR;
 }
 
 expr_recStr process_idAct(){
-	expr_recStr idEXPR;
+	expr_recStr idEXPR = {};
+	
+	//Check for ID
+	check_id(genBuffer);
 	
 	//set new expr_rec to enum ID EXPR
 	idEXPR.type = 0;
 	//set string to token buffer (which is an ID)
-	strcat(idEXPR.expression,tkPtr);
+	strcat(idEXPR.expression,genBuffer);
+	clear_buffer(genBuffer);
 	
 	return idEXPR;
 }
 
 op_recStr process_opAct(){
-	op_recStr op;
+	op_recStr op = {};
 	//set new op_rec to operation type
-	strcat(op.operation,tkPtr);
-	
+	strcat(op.operation,genBuffer);
+	clear_buffer(genBuffer);
 	return op;
 }

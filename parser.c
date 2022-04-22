@@ -135,7 +135,8 @@ int statement_list(){
 int statement(){
 	//enum token nxtTk;
 	int nxtTk;
-	expr_recStr target, source;
+	expr_recStr target = {};
+	expr_recStr source = {};
 
 	printf("\nRunning statement production\n");
 	nxtTk = next_token(tkPtr);
@@ -253,7 +254,7 @@ int if_tail(){
 //Production 10
 int id_list(){
 	enum token repeat;
-	expr_recStr id;
+	expr_recStr id = {};
 	printf("\nRunning id_list production\n");
 	id = ident();
 	read_idAct(id);
@@ -271,7 +272,7 @@ int id_list(){
 //Production 11
 int expr_list(){
 	enum token repeat;
-	expr_recStr id;
+	expr_recStr id = {};
 	//printf("\nRunning expr_list production\n");
 	expression(&id);
 	write_exprAct(id);
@@ -288,11 +289,12 @@ int expr_list(){
 }
 
 //Production 12
-int expression(expr_recStr *record){
+void expression(expr_recStr *record){
 //int expression(){
 	enum token repeat;
-	expr_recStr left,right;
-	op_recStr op;
+	expr_recStr left = {};
+	expr_recStr right = {};
+	op_recStr op = {};
 	
 	printf("\nRunning expression production\n");
 	term(&left);
@@ -307,15 +309,16 @@ int expression(expr_recStr *record){
 		//term();
 		repeat = next_token(tkPtr);
 	}
-	return 0;
+	return;
 }
 
 //Production 13
 void term(expr_recStr*operand){
 //int term(){
 	enum token repeat;
-	expr_recStr left, right;
-	op_recStr op;
+	expr_recStr left = {};
+	expr_recStr right = {};
+	op_recStr op = {};
 	printf("\nRunning term production\n");
 	factor(&left);
 	//factor();
@@ -335,7 +338,7 @@ void term(expr_recStr*operand){
 void factor(expr_recStr*operand){
 //int factor(){
 	enum token nxtTk;
-	expr_recStr temp;
+	expr_recStr temp = {};
 	printf("\nRunning factor production\n");
 	nxtTk = next_token(tkPtr);
 	switch(nxtTk){
@@ -443,8 +446,9 @@ void mult_op(op_recStr *op){
 expr_recStr condition(){
 //int condition(){
 	enum token repeat;
-	expr_recStr left,right;
-	op_recStr op;
+	expr_recStr left = {};
+	expr_recStr right = {};
+	op_recStr op = {};
 	printf("\nRunning condition production\n");
 	addition(&left);
 	//addition();
@@ -465,8 +469,9 @@ expr_recStr condition(){
 void addition(expr_recStr *operand){
 //int addition(){
 	enum token repeat;
-	expr_recStr left,right;
-	op_recStr op;
+	expr_recStr left = {};
+	expr_recStr right = {};
+	op_recStr op = {};
 	//printf("\nRunning addition production\n");
 	multiplication(right);
 	//multiplication();
@@ -487,8 +492,9 @@ void addition(expr_recStr *operand){
 void multiplication(expr_recStr operand){
 //int multiplication(){
 	enum token repeat;
-	expr_recStr left,right;
-	op_recStr op;
+	expr_recStr left = {};
+	expr_recStr right = {};
+	op_recStr op = {};
 	//printf("\nRunning multiplication production\n");
 	unary(left);
 	//unary();
@@ -508,7 +514,7 @@ void multiplication(expr_recStr operand){
 void unary(expr_recStr operand){
 //int unary(){
 	enum token nxtTk;
-	expr_recStr temp;
+	expr_recStr temp = {};
 	//printf("\nRunning unary production\n");
 	nxtTk = next_token(tkPtr);
 	
@@ -687,12 +693,14 @@ void rel_op(op_recStr *op){
 }
 
 expr_recStr ident(){
-	expr_recStr temp;
+	expr_recStr temp = {};
 	if(!match(ID,statePtr))
 	{
 		lexErr++;
 	}
-	temp = process_idAct();
+	else{
+		temp = process_idAct();
+	}
 	
 	return temp;
 }

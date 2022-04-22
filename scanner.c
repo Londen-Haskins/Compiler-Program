@@ -162,6 +162,7 @@ enum token scanner(char *tokBuf,FILE *inFile,FILE *out_file,FILE *listFile){
 		}
 	//fputs(tokBuf,listFile); //Add buffer to listing file
 	memcpy(listBuffer,tokBuf, sizeof(tokBuf));	
+	memcpy(genBuffer,tokBuf, sizeof(tokBuf));
 	}
 	}while(comment);//Comment found loop
 	return check_reserved(tokBuf);		

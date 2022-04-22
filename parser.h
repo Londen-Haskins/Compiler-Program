@@ -27,7 +27,7 @@ int statement_list();
 int statement();
 int id_list();
 int expr_list();
-int expression(expr_recStr *record);
+void expression(expr_recStr *record);
 void term(expr_recStr*operand);
 void factor(expr_recStr*operand);
 void add_op(op_recStr *op);

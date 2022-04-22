@@ -6,9 +6,11 @@
 #include <ctype.h>
 #include <stdbool.h>
 
+#define TKLE 1000
 #define TABLEC 100
 #define TABLEL 30
 char symbolTable[TABLEC][TABLEL];
+char genBuffer[TKLE];
 int tableIndex,tempNum;
 enum exprType{idEXPR,litEXPR,tempEXPR};
 
@@ -39,7 +41,7 @@ char*getTemp();
 
 void startAct();
 void finishAct();
-void assignAct();
+void assignAct(expr_recStr left,expr_recStr right);
 void read_idAct();
 void write_exprAct();
 expr_recStr gen_infixAct(expr_recStr left,op_recStr op,expr_recStr right);
