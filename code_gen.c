@@ -38,6 +38,7 @@ char*getTemp(){
 void startAct(){
 	//write descriptive heading to list and output files
 	//init code_gen variables
+	
 }
 
 void finishAct(){

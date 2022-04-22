@@ -300,7 +300,7 @@ int testForDupName(char *file){		//makes sure the output and input name are NOT 
 //	if(strcmp(file, "") != 0){
 }
 
-
+ 
 
 void init(int argc,char *argv[]){		//initalize the program (getting the input and output files working)
 	flag = 0;
@@ -313,6 +313,8 @@ void init(int argc,char *argv[]){		//initalize the program (getting the input an
 	synErr = 0;
 	stateBufP = 0; //Position for statement buffer
 	tkPtr = &tokenBuffer[0]; //Ptr to token buffer
+	listPtr = &listBuffer[0];//Ptr to listing buffer
+	newL = 0; //Toggle for new line list fault
 	statePtr = &stateBuf[0];
 	tokenList();
 

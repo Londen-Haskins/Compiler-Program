@@ -20,8 +20,10 @@ enum token scanner(char *tokBuf,FILE *inFile,FILE *out_file,FILE *listFile){
 		//Change to while loop
 		if(isspace(c)){
 			if(c == '\n'){
+				//Bool to signal match not to advance point
 				listNum++;
-				fprintf(listFile,"\n%d .		",listNum);
+				fprintf(listFile,"\n%d .		",listNum);	
+				
 			}
 			else{
 				fprintf(listFile,"%c",c);
@@ -140,7 +142,8 @@ enum token scanner(char *tokBuf,FILE *inFile,FILE *out_file,FILE *listFile){
 		else{
 			add_char(tokBuf,c,p);	
 		}
-	fputs(tokBuf,listFile); //Add buffer to listing file	
+	//fputs(tokBuf,listFile); //Add buffer to listing file
+	memcpy(listBuffer,tokBuf, sizeof(tokBuf));	
 	}
 	return check_reserved(tokBuf);		
 }

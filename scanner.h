@@ -7,8 +7,9 @@
 
 #define TKLEN 1000
 char tokenBuffer[TKLEN];
-char *tkPtr, *statePtr;
-int listNum, lexErr, synErr, stateBufP;
+char listBuffer[TKLEN];
+char *tkPtr, *statePtr, *listPtr;
+int listNum, lexErr, synErr, stateBufP,newL;
 
 
 

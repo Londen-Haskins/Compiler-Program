@@ -30,6 +30,8 @@ bool match(enum token token, char *tokBuf){
 	enum token nxtTk;
 	int i = 0;
 	nxtTk = next_token();
+	fputs(listBuffer,list_file); //Add buffer to listing file
+	clear_buffer(listBuffer);
 	if(nxtTk == token){
 		while(tokenBuffer[i] != '\0'){
 			add_char(tokBuf,tokenBuffer[i],stateBufP);
@@ -213,7 +215,7 @@ int statement(){
 int if_tail(){
 	enum token nxtTk;
 	//printf("\nRunning if_tail production\n");
-	nxtTk = scanner(tkPtr,in_file,out_file,list_file);
+	nxtTk = next_token(tkPtr);
 	
 	switch(nxtTk){
 		//Production 7
